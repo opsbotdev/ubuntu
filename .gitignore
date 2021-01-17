@@ -1,0 +1,11 @@
+.direnv
+.vagrant
+.vars
+
+packer_cache
+dist
+isos
+
+*.log
+*.swp
+*.tar.gz

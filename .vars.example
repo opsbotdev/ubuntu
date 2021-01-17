@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+export PACKER_CACHE_DIR="dist/packer_cache"
+export PACKER_LOG=1
+export PACKER_LOG_PATH="dist/packer.log"
+
+export VAGRANT_CLOUD_TOKEN="XXXXXXXXXXXXXXXXXXXXXXXXXX"
+
+VERSION="$(cat VERSION)"
+export VERSION

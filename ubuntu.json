@@ -1,0 +1,113 @@
+{
+  "_comment": "Build with `packer build ubuntu.json`",
+  "builders": [
+    {
+      "boot_wait": "5s",
+      "boot_command": [
+        "{{ user `boot_command_prefix` }}",
+        "autoinstall ds=nocloud-net;s=http://{{ .HTTPIP }}:{{ .HTTPPort }}/",
+        "<wait><enter>"
+      ],
+      "disk_size": "65536",
+      "guest_additions_path": "VBoxGuestAdditions_{{.Version}}.iso",
+      "guest_os_type": "{{ user `virtualbox_guest_os_type` }}",
+      "hard_drive_interface": "sata",
+      "headless": "{{ user `headless` }}",
+      "http_directory": "http",
+      "iso_checksum": "{{ user `iso_checksum` }}",
+      "iso_target_path": "{{ user `iso_path` }}",
+      "iso_urls": [
+        "{{ user `iso_path` }}/{{ user `iso_file` }}",
+        "{{ user `iso_url` }}"
+      ],
+      "output_directory": "dist/output-{{ user `vm_name` }}-virtualbox-iso",
+      "post_shutdown_delay": "1m",
+      "shutdown_command": "echo '{{ user `ssh_password` }}'|sudo -S shutdown -P now",
+      "ssh_password": "{{ user `ssh_password` }}",
+      "ssh_username": "{{ user `ssh_username` }}",
+      "ssh_wait_timeout": "10000s",
+      "ssh_handshake_attempts": "200",
+      "type": "virtualbox-iso",
+      "vboxmanage": [
+        ["modifyvm", "{{.Name}}", "--nictype1", "virtio"],
+        ["modifyvm", "{{.Name}}", "--memory", "2048"],
+        ["modifyvm", "{{.Name}}", "--cpus", "2"]
+      ],
+      "virtualbox_version_file": ".vbox_version",
+      "vm_name": "{{user `vm_name`}}-builder"
+    }
+  ],
+  "post-processors": [
+    [
+      {
+        "keep_input_artifact": false,
+        "name": "vbox",
+        "output": "dist/{{user `vm_name`}}-{{user `version`}}-{{.Provider}}.box",
+        "type": "vagrant"
+      },
+      {
+        "access_token": "{{user `vagrant_cloud_token`}}",
+        "box_tag": "{{user `box_tag`}}",
+        "type": "vagrant-cloud",
+        "version": "{{user `version`}}"
+      }
+    ]
+  ],
+  "provisioners": [
+    {
+      "environment_vars": [
+        "CLEANUP_PAUSE={{user `cleanup_pause`}}",
+        "DEBIAN_FRONTEND=noninteractive",
+        "DESKTOP={{user `desktop`}}",
+        "UPDATE={{user `update`}}",
+        "INSTALL_VAGRANT_KEY={{user `install_vagrant_key`}}",
+        "SSH_USERNAME={{user `ssh_username`}}",
+        "SSH_PASSWORD={{user `ssh_password`}}",
+        "http_proxy={{user `http_proxy`}}",
+        "https_proxy={{user `https_proxy`}}",
+        "ftp_proxy={{user `ftp_proxy`}}",
+        "rsync_proxy={{user `rsync_proxy`}}",
+        "no_proxy={{user `no_proxy`}}"
+      ],
+      "execute_command": "echo '{{ user `ssh_password` }}' | {{.Vars}} sudo -E -S bash '{{.Path}}'",
+      "scripts": [
+        "script/update.sh",
+        "script/desktop.sh",
+        "script/vagrant.sh",
+        "script/sshd.sh",
+        "script/vm_guest.sh",
+        "script/minimize.sh",
+        "script/cleanup.sh"
+      ],
+      "type": "shell",
+      "expect_disconnect": "true"
+    }
+  ],
+  "variables": {
+    "box_tag": "opsbot/ubuntu2004",
+    "boot_command_prefix": "<enter><enter><f6><esc><wait>",
+    "cleanup_pause": "",
+    "desktop": "false",
+    "ftp_proxy": "{{env `ftp_proxy`}}",
+    "headless": "false",
+    "http_proxy": "{{env `http_proxy`}}",
+    "https_proxy": "{{env `https_proxy`}}",
+    "install_vagrant_key": "true",
+    "iso_checksum": "sha256:443511f6bf12402c12503733059269a2e10dec602916c0a75263e5d990f6bb93",    
+    "iso_file": "ubuntu-20.04.1-live-server-amd64.iso",
+    "iso_path": "isos",
+    "iso_url": "http://releases.ubuntu.com/20.04/ubuntu-20.04.1-live-server-amd64.iso",
+    "no_proxy": "{{env `no_proxy`}}",
+    "rsync_proxy": "{{env `rsync_proxy`}}",
+    "hostname": "vagrant",
+    "ssh_fullname": "vagrant",
+    "ssh_password": "vagrant",
+    "ssh_username": "vagrant",
+    "update": "false",
+    "vagrant_cloud_token": "{{env `VAGRANT_CLOUD_TOKEN`}}",
+    "vagrantfile_template": "tpl/vagrantfile-ubuntu2004-desktop.tpl",
+    "version": "{{env `VERSION`}}",
+    "virtualbox_guest_os_type": "Ubuntu_64",
+    "vm_name": "ubuntu2004"
+  }
+}
