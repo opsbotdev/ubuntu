@@ -73,6 +73,7 @@
       "scripts": [
         "script/update.sh",
         "script/desktop.sh",
+        "script/locale.sh",
         "script/vagrant.sh",
         "script/sshd.sh",
         "script/vm_guest.sh",
