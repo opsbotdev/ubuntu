@@ -13,7 +13,7 @@ if [[ $DISTRIB_RELEASE == 16.04 || $DISTRIB_RELEASE == 18.04 || $DISTRIB_RELEASE
 fi
 
 echo "==> Updating list of repositories"
-# apt-get update does not actually perform updates, it just downloads and indexes the list of packages
+# sudo apt-get -qq update does not actually perform updates, it just downloads and indexes the list of packages
 apt-get -y update
 
 if [[ $UPDATE  =~ true || $UPDATE =~ 1 || $UPDATE =~ yes ]]; then

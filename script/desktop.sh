@@ -11,14 +11,14 @@ echo "==> Checking version of Ubuntu"
 
 # echo "==> Installing missing apt packages"
 # echo "==>==>==>==>==>==>==>==>==>==>==>==>==>==>==>==>==>==>"
-# apt-get install -y --fix-broken
+# sudo apt-get -qq install -y --fix-broken
 
 echo "==> Installing apt packages"
 echo "==>==>==>==>==>==>==>==>==>==>==>==>==>==>==>==>==>==>"
-apt-get update
-apt-get install -y ubuntu-desktop 
+sudo apt-get -qq update
+sudo apt-get -qq install -y ubuntu-desktop 
 
-# apt-get install -y \
+# sudo apt-get -qq install -y \
 #     apt-transport-https \
 #     ca-certificates \
 #     curl \
